@@ -11,13 +11,14 @@
 # WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
+"""
+ANSI colors for Python
+A simple module to add ANSI colors and decorations to your strings.
+"""
 import re
-
 from functools import partial
 
-
-__version__ = '1.0.2'
+__version__ = '1.1'
 
 COLORS = ('black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan',
           'white')
@@ -25,53 +26,86 @@ STYLES = ('bold', 'faint', 'italic', 'underline', 'blink', 'blink2',
           'negative', 'concealed', 'crossed')
 
 
-def color(s, fg=None, bg=None, style=None):
+def isvalidcolor(intcolor):
+    """ Is a valid color?
+    Return: True if the color is an int(0,255)
+    """
+    return isinstance(intcolor, int) and 0 <= intcolor <= 255
+
+
+def setcolor(thecolor, where="foreground"):
+    """
+    setcolor(thecolor, where="foreground" ) -> Return a list of the
+            escape color
+    [thecolor] can be a string of the COLORS tuple or an int from 0 to 255
+    [where] can be only "background" or "foreground" any other value
+            defaults to "foreground" values
+    """
+
+    __setup = {
+        "background": (40, '48;5;'),
+        "foreground": (30, '38;5;')
+    }
+
+    by_str, by_int = __setup.get(where, __setup["foreground"])
     sgr = []
 
-    if fg:
-        if fg in COLORS:
-            sgr.append(str(30 + COLORS.index(fg)))
-        elif isinstance(fg, int) and 0 <= fg <= 255:
-            sgr.append('38;5;%d' % int(fg))
+    if thecolor:
+        if thecolor in COLORS:
+            sgr.append(str(by_str + COLORS.index(thecolor)))
+        elif isvalidcolor(thecolor):
+            sgr.append('{0}{1:d}'.format(by_int, thecolor))
         else:
-            raise Exception('Invalid color "%s"' % fg)
+            raise Exception('Invalid color {}'.format(thecolor))
+    return sgr
 
-    if bg:
-        if bg in COLORS:
-            sgr.append(str(40 + COLORS.index(bg)))
-        elif isinstance(bg, int) and 0 <= bg <= 255:
-            sgr.append('48;5;%d' % bg)
-        else:
-            raise Exception('Invalid color "%s"' % bg)
 
+def setstyle(style):
+    """
+    Set the style. Availible styles == STYLES. Not all styles are
+    supported by all terminals.
+    """
+    sgr = []
     if style:
-        for st in style.split('+'):
-            if st in STYLES:
-                sgr.append(str(1 + STYLES.index(st)))
+        for new_style in style.split('+'):
+            if new_style in STYLES:
+                sgr.append(str(1 + STYLES.index(new_style)))
             else:
-                raise Exception('Invalid style "%s"' % st)
+                raise Exception('Invalid style "{}"'.format(new_style))
+    return sgr
+
+
+def color(message, foreground=None, background=None, style=None):
+    """
+    color function. Constructor of the basic ansi colors
+    """
+    sgr = []
+    sgr += setcolor(foreground)
+    sgr += setcolor(background, "background")
+    sgr += setstyle(style)
 
     if sgr:
         prefix = '\x1b[' + ';'.join(sgr) + 'm'
         suffix = '\x1b[0m'
-        return prefix + s + suffix
+        return prefix + message + suffix
     else:
-        return s
+        return message
 
 
-def strip_color(s):
-    return re.sub('\x1b\[.+?m', '', s)
+def strip_color(message):
+    """ Is this used?? """
+    return re.sub(r'\x1b\[.+?m', '', message)
 
 
 # Foreground shortcuts
-black = partial(color, fg='black')
-red = partial(color, fg='red')
-green = partial(color, fg='green')
-yellow = partial(color, fg='yellow')
-blue = partial(color, fg='blue')
-magenta = partial(color, fg='magenta')
-cyan = partial(color, fg='cyan')
-white = partial(color, fg='white')
+black = partial(color, foreground='black')
+red = partial(color, foreground='red')
+green = partial(color, foreground='green')
+yellow = partial(color, foreground='yellow')
+blue = partial(color, foreground='blue')
+magenta = partial(color, foreground='magenta')
+cyan = partial(color, foreground='cyan')
+white = partial(color, foreground='white')
 
 # Style shortcuts
 bold = partial(color, style='bold')
