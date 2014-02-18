@@ -3,6 +3,12 @@ ANSI colors for Python
 
 A simple module to add ANSI colors and decorations to your strings.
 
+.. image:: https://travis-ci.org/esparta/colors.png?branch=master
+        :target: https://travis-ci.org/esparta/colors
+
+.. image:: https://coveralls.io/repos/esparta/colors/badge.png
+        :target: https://coveralls.io/r/esparta/colors
+
 Example Usage
 -------------
 
