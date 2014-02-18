@@ -26,8 +26,7 @@ class Test_Colors(unittest.TestCase):
 
     def test_error_on_bad_color_string(self):
         """Test if we have an exception with a bad string color """
-        with self.assertRaises(Exception):
-            color("RED", "fushia")
+        self.assertRaises(Exception, lambda: color("RED", "fushia"))
 
     def test_integer_color(self):
         """Test if we can use a integer as a color """
@@ -35,8 +34,7 @@ class Test_Colors(unittest.TestCase):
 
     def test_error_on_bad_color_int(self):
         """Test if we have an exception with a bad color number """
-        with self.assertRaises(Exception):
-            color("RED", 911)
+        self.assertRaises(Exception, lambda: color("RED", 911))
 
     def test_background_color(self):
         """Test the background color with string """
@@ -48,21 +46,17 @@ class Test_Colors(unittest.TestCase):
 
     def test_error_setting_style_color(self):
         """Test if we have an exception setting the style """
-        with self.assertRaises(Exception):
-            color("BOLD", style="MAYUSCULAS")
+        self.assertRaises(Exception, lambda: color("BOLD", style="MAY"))
 
     def test_error_on_bad_color_notint(self):
         """Test if we have an exception with a bad color number """
-        with self.assertRaises(Exception):
-            color("RED", 911.11)
+        self.assertRaises(Exception, lambda: color("RED", 911.11))
 
     def test_error_on_bad_style(self):
         """Test if we have an exception with a bad color number """
-        with self.assertRaises(Exception):
-            color("RED", background="cursivas")
+        self.assertRaises(Exception, lambda: color("RED",
+                                             background="cursivas"))
 
     def test_remove_color(self):
         """ We can get the original message without the colors """
         self.assertEqual(strip_color(color("RED", "red")), "RED")
-
-
